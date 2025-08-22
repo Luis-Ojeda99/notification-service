@@ -1,0 +1,35 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "Notification service with multi-channel delivery, PostgreSQL-based queue system, and real-time monitoring",
+  "keywords": [
+    "notification",
+    "postgresql",
+    "email",
+    "webhook",
+    "rest-api",
+    "api",
+    "backend",
+    "queue",
+    "sms"
+  ],
+  "homepage": "https://github.com/Luis-Ojeda99/notification-service#readme",
+  "bugs": {
+    "url": "https://github.com/Luis-Ojeda99/notification-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Luis-Ojeda99/notification-service.git"
+  },
+  "license": "ISC",
+  "author": "Luis Ojeda",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
