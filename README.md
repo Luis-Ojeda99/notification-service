@@ -5,7 +5,8 @@ Currently under development.
 
 ## Getting Started
 1. Clone the repository:
-git clone https://github.com/Luis-Ojeda99/notification-service.git cd notification-service
+git clone https://github.com/Luis-Ojeda99/notification-service.git 
+cd notification-service
 
 2. Install dependencies:
 npm install
