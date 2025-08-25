@@ -1,4 +1,5 @@
 const NotificationWorker = require('./src/workers/notificationWorker');
+const RetryWorker = require('./src/workers/retryWorker');
 const logger = require('./src/utils/logger');
 const db = require('./src/database/connection');
 
