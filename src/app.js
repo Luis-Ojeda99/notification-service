@@ -51,6 +51,21 @@ app.use('/', dashboardRoutes);
 // API routes
 app.use('/api/v1/notifications', notificationRoutes);
 
+//Root API endpoint
+app.get('/api/v1', (req, res, next) => {
+  try {
+    res.json({
+      message: 'Notification Service API v1',
+      endpoints: {
+        notifications: '/api/v1/notifications',
+        health: '/health'
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // 404 handler 
 app.use((req, res, next) => {
   try {
