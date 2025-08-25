@@ -1,0 +1,27 @@
+<%- include('../includes/head.ejs') %>
+
+<h2>Analytics</h2>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <h3>Total Sent</h3>
+    <div class="number"><%= stats.total %></div>
+  </div>
+  <div class="stat-card delivered">
+    <h3>Success Rate</h3>
+    <div class="number">
+      <%= stats.total > 0 ? Math.round((stats.delivered / stats.total) * 100) :
+      0 %>%
+    </div>
+  </div>
+  <div class="stat-card failed">
+    <h3>Failed</h3>
+    <div class="number"><%= stats.failed %></div>
+  </div>
+  <div class="stat-card pending">
+    <h3>Pending</h3>
+    <div class="number"><%= stats.pending %></div>
+  </div>
+</div>
+
+<%- include('../includes/end.ejs') %>
