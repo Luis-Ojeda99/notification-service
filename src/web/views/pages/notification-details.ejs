@@ -1,0 +1,50 @@
+<%- include('../includes/head.ejs') %>
+
+<h2>Notification Details</h2>
+
+<div class="form-container">
+  <div class="form-group">
+    <label>ID:</label>
+    <p><%= notification.id %></p>
+  </div>
+
+  <div class="form-group">
+    <label>Recipient:</label>
+    <p><%= notification.recipient %></p>
+  </div>
+
+  <div class="form-group">
+    <label>Channel:</label>
+    <p><%= notification.channel %></p>
+  </div>
+
+  <div class="form-group">
+    <label>Status:</label>
+    <p>
+      <span class="status <%= notification.status %>"
+        ><%= notification.status %></span
+      >
+    </p>
+  </div>
+
+  <div class="form-group">
+    <label>Subject:</label>
+    <p><%= notification.subject || 'No subject' %></p>
+  </div>
+
+  <div class="form-group">
+    <label>Content:</label>
+    <p><%= notification.content %></p>
+  </div>
+
+  <div class="form-group">
+    <label>Created:</label>
+    <p><%= new Date(notification.created_at).toLocaleString() %></p>
+  </div>
+
+  <div class="form-group">
+    <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+</div>
+
+<%- include('../includes/end.ejs') %>
