@@ -1,0 +1,13 @@
+<%- include('../includes/head', { pageTitle: pageTitle }) %>
+<link rel="stylesheet" href="/css/error.css">
+
+<main class="error-container">
+  <h1 class="error-message">404 - Page Not Found</h1>
+  <p>The page <code><%= path %></code> does not exist.</p>
+
+  <p>
+    <a href="/">Go back to dashboard</a>
+  </p>
+</main>
+
+<%- include('../includes/end') %>

@@ -1,4 +1,3 @@
-// src/controllers/dashboardController.js
 const notificationRepository = require("../database/repositories/notificationRepository");
 
 // GET / - Dashboard home
@@ -15,8 +14,14 @@ exports.getDashboard = async (req, res, next) => {
       success: req.query.success || false,
     });
   } catch (error) {
-    console.error("Dashboard error:", error);
-    next(error);
+    if (error.message.includes("Failed to lookup view")) {
+      res.status(404).render("pages/404", {
+        pageTitle: "404 - Page Not Found",
+        path: req.path,
+      });
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -29,7 +34,14 @@ exports.getSendForm = (req, res, next) => {
       error: req.query.error || false,
     });
   } catch (error) {
-    next(error);
+    if (error.message.includes("Failed to lookup view")) {
+      res.status(404).render("pages/404", {
+        pageTitle: "404 - Page Not Found",
+        path: req.path,
+      });
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -38,7 +50,6 @@ exports.postSendNotification = async (req, res, next) => {
   try {
     const { recipient, channel, subject, content } = req.body;
 
-    // Basic validation
     if (!recipient || !channel || !content) {
       return res.redirect("/send?error=true");
     }
@@ -75,23 +86,34 @@ exports.getNotificationDetails = async (req, res, next) => {
       notification,
     });
   } catch (error) {
-    console.error("Error fetching notification:", error);
-    next(error);
+    if (error.message.includes("Failed to lookup view")) {
+      res.status(404).render("pages/404", {
+        pageTitle: "404 - Page Not Found",
+        path: req.path,
+      });
+    } else {
+      next(error);
+    }
   }
 };
 
 // GET /templates - Show templates
 exports.getTemplates = async (req, res, next) => {
   try {
-    // For now, just render a placeholder
     res.render("pages/templates", {
       pageTitle: "Templates",
       path: "/templates",
       templates: [],
     });
   } catch (error) {
-    console.error("Error fetching templates:", error);
-    next(error);
+    if (error.message.includes("Failed to lookup view")) {
+      res.status(404).render("pages/404", {
+        pageTitle: "404 - Page Not Found",
+        path: req.path,
+      });
+    } else {
+      next(error);
+    }
   }
 };
 
@@ -106,7 +128,13 @@ exports.getAnalytics = async (req, res, next) => {
       stats,
     });
   } catch (error) {
-    console.error("Error fetching analytics:", error);
-    next(error);
+    if (error.message.includes("Failed to lookup view")) {
+      res.status(404).render("pages/404", {
+        pageTitle: "404 - Page Not Found",
+        path: req.path,
+      });
+    } else {
+      next(error);
+    }
   }
 };

@@ -1,0 +1,18 @@
+<%- include('../includes/head', { pageTitle: pageTitle }) %>
+<link rel="stylesheet" href="/css/error.css" />
+
+<main class="error-container">
+  <h1 class="error-message">
+    <h1><%= error ? error.message : "Something went wrong" %></h1>
+  </h1>
+
+  <% if (error && error.stack) { %>
+  <pre class="error-stack"><%= error.stack %></pre>
+  <% } %>
+
+  <p>
+    <a href="/">Go back to dashboard</a>
+  </p>
+</main>
+
+<%- include('../includes/end') %>

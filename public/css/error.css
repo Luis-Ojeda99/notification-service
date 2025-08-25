@@ -1,0 +1,23 @@
+.error-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #d9534f; /* Bootstrap-style red */
+}
+
+.error-stack {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  text-align: left;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
