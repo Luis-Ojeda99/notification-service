@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %> - Notification Service</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+    <%- include('./navigation.ejs') %>
+    <main class="container">
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success">
+                ✅ Notification sent successfully!
+            </div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error">
+                ❌ There was an error processing your request.
+            </div>
+        <% } %>

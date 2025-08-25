@@ -1,5 +1,5 @@
-const path = require('path');
 const fs = require('fs').promises;
+const path = require('path');
 const db = require('../src/database/connection');
 
 async function runMigrations() {
@@ -14,9 +14,13 @@ async function runMigrations() {
     await db.query(sql);
     
     console.log('✅ Database migrations completed successfully!');
+    
+    // Close the database connection
+    await db.pool.end();
     process.exit(0);
   } catch (error) {
     console.error('❌ Migration failed:', error.message);
+    console.error('Full error:', error);
     process.exit(1);
   }
 }

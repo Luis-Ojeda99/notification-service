@@ -1,11 +1,11 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const path = require("path");
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const path = require('path');
 
-const config = require("./config");
-const logger = require("./utils/logger");
+const config = require('./config');
+const logger = require('./utils/logger');
 
 const app = express();
 
@@ -18,46 +18,66 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Logging
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
-// View engine setup
-app.set("views", path.join(__dirname, "web/views"));
-app.set("view engine", "ejs");
+// View engine setup (using regular EJS with includes)
+app.set('views', path.join(__dirname, 'web/views'));
+app.set('view engine', 'ejs');
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({
-    status: "healthy",
-    service: config.app.name,
-    version: config.app.version,
-    timestamp: new Date().toISOString(),
-  });
+// Static files (for CSS, JS, images)
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Health check endpoint 
+app.get('/health', (req, res, next) => {
+  try {
+    res.json({ 
+      status: 'healthy',
+      service: config.app.name,
+      version: config.app.version,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-// Root endpoint
-app.get("/", (req, res) => {
-  res.json({
-    message: "Notification Service API",
-    version: config.app.version,
-    endpoints: {
-      health: "/health",
-      api: "/api/v1",
-    },
-  });
-});
+// Web routes (Dashboard)
+app.use('/', require('./web/routes/dashboard'));
 
-// TODO API Routes
-// app.use('/api/v1/notifications', require('./api/v1/routes/notifications'));
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+// 404 handler 
+app.use((req, res, next) => {
+  try {
+    // Check if it's an API request or web request
+    if (req.path.startsWith('/api')) {
+      res.status(404).json({ error: 'API endpoint not found' });
+    } else {
+      res.status(404).render('pages/404', {
+        pageTitle: '404 - Page Not Found',
+        path: req.path
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Error handler
 app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  logger.error('Error:', err.stack);
+  
+  // Check if it's an API request or web request
+  if (req.path.startsWith('/api')) {
+    res.status(500).json({ 
+      error: 'Something went wrong!',
+      message: config.app.env === 'development' ? err.message : undefined
+    });
+  } else {
+    res.status(500).render('pages/error', {
+      pageTitle: 'Error',
+      path: req.path,
+      error: config.app.env === 'development' ? err : null
+    });
+  }
 });
 
 module.exports = app;
