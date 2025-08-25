@@ -1,12 +1,14 @@
 const queueManager = require("../core/queue/queueManager");
 const notificationRepository = require("../database/repositories/notificationRepository");
 const emailChannel = require("../core/channels/emailChannel");
+const smsChannel = require('../core/channels/smsChannel');
 
 class NotificationWorker {
   constructor() {
     this.isRunning = false;
     this.channels = {
       email: emailChannel,
+      sms: smsChannel
     };
   }
 
