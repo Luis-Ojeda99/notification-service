@@ -55,7 +55,7 @@ exports.postSendNotification = async (req, res, next) => {
       return res.redirect("/send?error=true");
     }
 
-    await notificationRepository.create({
+    const notification = await notificationRepository.create({
       recipient,
       channel,
       subject: subject || "Notification",
