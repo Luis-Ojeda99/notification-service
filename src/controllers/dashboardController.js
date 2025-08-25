@@ -1,4 +1,5 @@
 const notificationRepository = require("../database/repositories/notificationRepository");
+const queueManager = require('../core/queue/queueManager');
 
 // GET / - Dashboard home
 exports.getDashboard = async (req, res, next) => {
@@ -60,6 +61,8 @@ exports.postSendNotification = async (req, res, next) => {
       subject: subject || "Notification",
       content,
     });
+    
+    await queueManager.enqueue(notification.id, 1);
 
     res.redirect("/?success=true");
   } catch (error) {
