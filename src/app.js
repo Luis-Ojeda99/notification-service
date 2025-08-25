@@ -7,6 +7,10 @@ const path = require('path');
 const config = require('./config');
 const logger = require('./utils/logger');
 
+// Route imports
+const dashboardRoutes = require('./web/routes/dashboard');
+const notificationRoutes = require('./api/v1/routes/notifications');
+
 const app = express();
 
 // Security middleware
@@ -20,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // Logging
 app.use(morgan('dev'));
 
-// View engine setup (using regular EJS with includes)
+// View engine setup 
 app.set('views', path.join(__dirname, 'web/views'));
 app.set('view engine', 'ejs');
 
@@ -42,7 +46,10 @@ app.get('/health', (req, res, next) => {
 });
 
 // Web routes (Dashboard)
-app.use('/', require('./web/routes/dashboard'));
+app.use('/', dashboardRoutes);
+
+// API routes
+app.use('/api/v1/notifications', notificationRoutes);
 
 // 404 handler 
 app.use((req, res, next) => {
