@@ -1,0 +1,66 @@
+<%- include('../includes/head.ejs') %>
+
+<h2>Bulk Send Notifications</h2>
+
+<div class="form-container">
+  <form method="POST" action="/bulk">
+    <div class="form-group">
+      <label for="recipients">Recipients *</label>
+      <textarea
+        id="recipients"
+        name="recipients"
+        class="recipients-input"
+        rows="6"
+        placeholder="Enter recipients separated by commas or new lines&#10;example@email.com&#10;another@email.com&#10;+1234567890"
+        required
+      ></textarea>
+      <small>Enter multiple recipients, one per line or comma-separated</small>
+    </div>
+
+    <div class="form-group">
+      <label for="channel">Channel *</label>
+      <select id="channel" name="channel" required>
+        <option value="">Select a channel</option>
+        <option value="email">Email</option>
+        <option value="sms">SMS</option>
+        <option value="webhook">Webhook</option>
+        <option value="push">Push</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="subject">Subject</label>
+      <input
+        type="text"
+        id="subject"
+        name="subject"
+        placeholder="Notification subject (optional)"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="content">Message *</label>
+      <textarea
+        id="content"
+        name="content"
+        rows="6"
+        placeholder="Enter your notification message..."
+        required
+      ></textarea>
+    </div>
+
+    <div class="alert alert-warning">
+      ⚠️ This will send to all recipients. Bulk sends have lower priority than
+      individual notifications.
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">
+        Send to All Recipients
+      </button>
+      <a href="/" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../includes/end.ejs') %>
