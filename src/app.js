@@ -1,15 +1,18 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const path = require('path');
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const path = require("path");
 
-const config = require('./config');
-const logger = require('./utils/logger');
+const config = require("./config");
+const logger = require("./utils/logger");
 
 // Route imports
-const dashboardRoutes = require('./web/routes/dashboard');
-const notificationRoutes = require('./api/v1/routes/notifications');
+const dashboardRoutes = require("./web/routes/dashboard");
+const notificationRoutes = require("./api/v1/routes/notifications");
+
+// Service imports
+const healthService = require("./services/healthService");
 
 const app = express();
 
@@ -22,60 +25,66 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Logging
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
-// View engine setup 
-app.set('views', path.join(__dirname, 'web/views'));
-app.set('view engine', 'ejs');
+// View engine setup
+app.set("views", path.join(__dirname, "web/views"));
+app.set("view engine", "ejs");
 
 // Static files (for CSS, JS, images)
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, "../public")));
 
-// Health check endpoint 
-app.get('/health', (req, res, next) => {
+// Health check endpoint
+app.get("/health", async (req, res, next) => {
   try {
-    res.json({ 
-      status: 'healthy',
+    const health = await healthService.getSystemHealth();
+    const statusCode = health.status === "unhealthy" ? 503 : 200;
+
+    res.status(statusCode).json({
+      ...health,
       service: config.app.name,
       version: config.app.version,
-      timestamp: new Date().toISOString()
     });
   } catch (error) {
-    next(error);
+    res.status(503).json({
+      status: "unhealthy",
+      error: "Health check failed",
+      timestamp: new Date().toISOString(),
+    });
   }
 });
 
 // Web routes (Dashboard)
-app.use('/', dashboardRoutes);
+app.use("/", dashboardRoutes);
 
 // API routes
-app.use('/api/v1/notifications', notificationRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 //Root API endpoint
-app.get('/api/v1', (req, res, next) => {
+app.get("/api/v1", (req, res, next) => {
   try {
     res.json({
-      message: 'Notification Service API v1',
+      message: "Notification Service API v1",
       endpoints: {
-        notifications: '/api/v1/notifications',
-        health: '/health'
-      }
+        notifications: "/api/v1/notifications",
+        health: "/health",
+      },
     });
   } catch (error) {
     next(error);
   }
 });
 
-// 404 handler 
+// 404 handler
 app.use((req, res, next) => {
   try {
     // Check if it's an API request or web request
-    if (req.path.startsWith('/api')) {
-      res.status(404).json({ error: 'API endpoint not found' });
+    if (req.path.startsWith("/api")) {
+      res.status(404).json({ error: "API endpoint not found" });
     } else {
-      res.status(404).render('pages/404', {
-        pageTitle: '404 - Page Not Found',
-        path: req.path
+      res.status(404).render("pages/404", {
+        pageTitle: "404 - Page Not Found",
+        path: req.path,
       });
     }
   } catch (error) {
@@ -85,19 +94,19 @@ app.use((req, res, next) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  logger.error('Error:', err.stack);
-  
+  logger.error("Error:", err.stack);
+
   // Check if it's an API request or web request
-  if (req.path.startsWith('/api')) {
-    res.status(500).json({ 
-      error: 'Something went wrong!',
-      message: config.app.env === 'development' ? err.message : undefined
+  if (req.path.startsWith("/api")) {
+    res.status(500).json({
+      error: "Something went wrong!",
+      message: config.app.env === "development" ? err.message : undefined,
     });
   } else {
-    res.status(500).render('pages/error', {
-      pageTitle: 'Error',
+    res.status(500).render("pages/error", {
+      pageTitle: "Error",
       path: req.path,
-      error: config.app.env === 'development' ? err : null
+      error: config.app.env === "development" ? err : null,
     });
   }
 });
