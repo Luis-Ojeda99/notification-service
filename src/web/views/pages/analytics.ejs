@@ -1,7 +1,8 @@
 <%- include('../includes/head.ejs') %>
 
-<h2>Analytics</h2>
+<h2>Analytics Dashboard</h2>
 
+<!-- Overall Stats -->
 <div class="stats-grid">
   <div class="stat-card">
     <h3>Total Sent</h3>
@@ -9,19 +10,70 @@
   </div>
   <div class="stat-card delivered">
     <h3>Success Rate</h3>
-    <div class="number">
-      <%= stats.total > 0 ? Math.round((stats.delivered / stats.total) * 100) :
-      0 %>%
-    </div>
+    <div class="number"><%= stats.total > 0 ? Math.round((stats.delivered / stats.total) * 100) : 0 %>%</div>
   </div>
   <div class="stat-card failed">
-    <h3>Failed</h3>
-    <div class="number"><%= stats.failed %></div>
+    <h3>Failure Rate</h3>
+    <div class="number"><%= stats.total > 0 ? Math.round((stats.failed / stats.total) * 100) : 0 %>%</div>
   </div>
   <div class="stat-card pending">
-    <h3>Pending</h3>
+    <h3>Queue Size</h3>
     <div class="number"><%= stats.pending %></div>
   </div>
 </div>
+
+<!-- Channel Performance -->
+<h3>Performance by Channel</h3>
+<% if (channelStats && channelStats.length > 0) { %>
+  <table>
+    <thead>
+      <tr>
+        <th>Channel</th>
+        <th>Total</th>
+        <th>Delivered</th>
+        <th>Failed</th>
+        <th>Success Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% channelStats.forEach(channel => { %>
+        <tr>
+          <td><%= channel.channel %></td>
+          <td><%= channel.total %></td>
+          <td><%= channel.delivered %></td>
+          <td><%= channel.failed %></td>
+          <td><%= channel.total > 0 ? Math.round((channel.delivered / channel.total) * 100) : 0 %>%</td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else { %>
+  <p>No channel data available yet.</p>
+<% } %>
+
+<!-- Top Recipients -->
+<h3>Top Recipients</h3>
+<% if (topRecipients && topRecipients.length > 0) { %>
+  <table>
+    <thead>
+      <tr>
+        <th>Recipient</th>
+        <th>Total Sent</th>
+        <th>Delivered</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% topRecipients.forEach(recipient => { %>
+        <tr>
+          <td><%= recipient.recipient %></td>
+          <td><%= recipient.total %></td>
+          <td><%= recipient.delivered %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else { %>
+  <p>No recipient data available yet.</p>
+<% } %>
 
 <%- include('../includes/end.ejs') %>

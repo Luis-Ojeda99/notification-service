@@ -1,5 +1,6 @@
 const notificationRepository = require("../database/repositories/notificationRepository");
 const templateRepository = require("../database/repositories/templateRepository");
+const statsService = require("../services/statsService");
 const queueManager = require("../core/queue/queueManager");
 
 // GET / - Dashboard home
@@ -128,11 +129,15 @@ exports.getTemplates = async (req, res, next) => {
 exports.getAnalytics = async (req, res, next) => {
   try {
     const stats = await notificationRepository.getStats();
+    const channelStats = await statsService.getChannelStats();
+    const topRecipients = await statsService.getTopRecipients(5);
 
     res.render("pages/analytics", {
       pageTitle: "Analytics",
       path: "/analytics",
       stats,
+      channelStats,
+      topRecipients,
     });
   } catch (error) {
     if (error.message.includes("Failed to lookup view")) {
