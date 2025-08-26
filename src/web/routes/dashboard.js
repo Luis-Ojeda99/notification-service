@@ -3,8 +3,8 @@ const router = express.Router();
 
 const dashboardController = require("../../controllers/dashboardController");
 const templateController = require("../../controllers/templateController");
-const bulkController = require("../../controllers/bulkController");
-const exportController = require("../../controllers/exportController");
+const bulkNotificationController = require("../../controllers/bulkNotificationController");
+const notificationExportController = require("../../controllers/notificationExportController");
 
 // Dashboard routes
 router.get("/", dashboardController.getDashboard);
@@ -25,10 +25,10 @@ router.get("/templates/create", templateController.getCreateTemplate);
 router.post("/templates/create", templateController.postCreateTemplate);
 
 // Bulk send routes
-router.get("/bulk", bulkController.getBulkSendForm);
+router.get("/bulk", bulkNotificationController.getBulkSendForm);
 
-router.post("/bulk", bulkController.postBulkSend);
+router.post("/bulk", bulkNotificationController.postBulkSend);
 
 // Export route
-router.get("/export", exportController.exportNotifications);
+router.get("/export", notificationExportController.exportNotifications);
 module.exports = router;

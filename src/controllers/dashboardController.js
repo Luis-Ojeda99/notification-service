@@ -1,6 +1,6 @@
 const notificationRepository = require("../database/repositories/notificationRepository");
 const templateRepository = require("../database/repositories/templateRepository");
-const statsService = require("../services/statsService");
+const notificationStatsService = require("../services/notificationStatsService");
 const db = require('../database/connection');
 const queueManager = require("../core/queue/queueManager");
 
@@ -155,8 +155,8 @@ exports.getTemplates = async (req, res, next) => {
 exports.getAnalytics = async (req, res, next) => {
   try {
     const stats = await notificationRepository.getStats();
-    const channelStats = await statsService.getChannelStats();
-    const topRecipients = await statsService.getTopRecipients(5);
+    const channelStats = await notificationStatsService.getChannelStats();
+    const topRecipients = await notificationStatsService.getTopRecipients(5);
 
     res.render("pages/analytics", {
       pageTitle: "Analytics",
