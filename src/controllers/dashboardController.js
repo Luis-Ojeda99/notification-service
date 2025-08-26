@@ -3,10 +3,12 @@ const templateRepository = require("../database/repositories/templateRepository"
 const notificationStatsService = require("../services/notificationStatsService");
 const db = require('../database/connection');
 const queueManager = require("../core/queue/queueManager");
+const logger = require('../utils/logger');
 
 exports.getDashboard = async (req, res, next) => {
   try {
     const { search, status, channel } = req.query;
+    logger.info('Dashboard accessed', { search, status, channel });
 
     // Build query
     let query = "SELECT * FROM notifications WHERE 1=1";
@@ -43,14 +45,8 @@ exports.getDashboard = async (req, res, next) => {
       success: req.query.success || false,
     });
   } catch (error) {
-    if (error.message.includes("Failed to lookup view")) {
-      res.status(404).render("pages/404", {
-        pageTitle: "404 - Page Not Found",
-        path: req.path,
-      });
-    } else {
-      next(error);
-    }
+    logger.error('Dashboard error:', error);
+    next(error);
   }
 };
 
@@ -58,6 +54,7 @@ exports.getDashboard = async (req, res, next) => {
 exports.getSendForm = async (req, res, next) => {
   try {
     const templates = await templateRepository.findAll();
+    logger.info('Send form accessed');
 
     res.render("pages/send", {
       pageTitle: "Send Notification",
@@ -66,14 +63,8 @@ exports.getSendForm = async (req, res, next) => {
       error: req.query.error || false,
     });
   } catch (error) {
-    if (error.message.includes("Failed to lookup view")) {
-      res.status(404).render("pages/404", {
-        pageTitle: "404 - Page Not Found",
-        path: req.path,
-      });
-    } else {
-      next(error);
-    }
+    logger.error('Send form error:', error);
+    next(error);
   }
 };
 
@@ -83,6 +74,7 @@ exports.postSendNotification = async (req, res, next) => {
     const { recipient, channel, subject, content } = req.body;
 
     if (!recipient || !channel || !content) {
+      logger.warn('Send notification validation failed', { recipient, channel, hasContent: !!content });
       return res.redirect("/send?error=true");
     }
 
@@ -94,11 +86,17 @@ exports.postSendNotification = async (req, res, next) => {
     });
 
     await queueManager.enqueue(notification.id, 1);
+    
+    logger.info('Notification created and queued', { 
+      notificationId: notification.id, 
+      recipient, 
+      channel 
+    });
 
     res.redirect("/?success=true");
   } catch (error) {
-    console.error("Error sending notification:", error);
-    next(error);
+    logger.error('Error creating notification:', error);
+    res.redirect("/send?error=true");
   }
 };
 
@@ -108,6 +106,7 @@ exports.getNotificationDetails = async (req, res, next) => {
     const notification = await notificationRepository.findById(req.params.id);
 
     if (!notification) {
+      logger.warn('Notification not found', { id: req.params.id });
       return res.status(404).render("pages/404", {
         pageTitle: "404 - Not Found",
         path: req.path,
@@ -120,34 +119,8 @@ exports.getNotificationDetails = async (req, res, next) => {
       notification,
     });
   } catch (error) {
-    if (error.message.includes("Failed to lookup view")) {
-      res.status(404).render("pages/404", {
-        pageTitle: "404 - Page Not Found",
-        path: req.path,
-      });
-    } else {
-      next(error);
-    }
-  }
-};
-
-// GET /templates - Show templates
-exports.getTemplates = async (req, res, next) => {
-  try {
-    res.render("pages/templates", {
-      pageTitle: "Templates",
-      path: "/templates",
-      templates: [],
-    });
-  } catch (error) {
-    if (error.message.includes("Failed to lookup view")) {
-      res.status(404).render("pages/404", {
-        pageTitle: "404 - Page Not Found",
-        path: req.path,
-      });
-    } else {
-      next(error);
-    }
+    logger.error('Notification details error:', error);
+    next(error);
   }
 };
 
@@ -158,6 +131,8 @@ exports.getAnalytics = async (req, res, next) => {
     const channelStats = await notificationStatsService.getChannelStats();
     const topRecipients = await notificationStatsService.getTopRecipients(5);
 
+    logger.info('Analytics accessed');
+
     res.render("pages/analytics", {
       pageTitle: "Analytics",
       path: "/analytics",
@@ -166,13 +141,7 @@ exports.getAnalytics = async (req, res, next) => {
       topRecipients,
     });
   } catch (error) {
-    if (error.message.includes("Failed to lookup view")) {
-      res.status(404).render("pages/404", {
-        pageTitle: "404 - Page Not Found",
-        path: req.path,
-      });
-    } else {
-      next(error);
-    }
+    logger.error('Analytics error:', error);
+    next(error);
   }
 };
