@@ -2,9 +2,39 @@
 
 <h2>Notification Templates</h2>
 
+<div style="margin-bottom: 2rem">
+  <a href="/templates/create" class="btn btn-primary">Create Template</a>
+</div>
+
+<% if (templates && templates.length > 0) { %>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Channel</th>
+      <th>Subject</th>
+      <th>Description</th>
+      <th>Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% templates.forEach(template => { %>
+    <tr>
+      <td><%= template.name %></td>
+      <td><%= template.channel %></td>
+      <td><%= template.subject || '-' %></td>
+      <td><%= template.description || '-' %></td>
+      <td><%= new Date(template.created_at).toLocaleDateString() %></td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } else { %>
 <div class="empty-state">
   <h3>No templates yet</h3>
-  <p>Templates feature coming soon!</p>
+  <p>Create your first template to reuse notification formats.</p>
+  <a href="/templates/create" class="btn btn-primary">Create Template</a>
 </div>
+<% } %> 
 
 <%- include('../includes/end.ejs') %>

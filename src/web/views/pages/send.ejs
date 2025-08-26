@@ -2,24 +2,43 @@
 
 <div class="container">
   <h2>Send Notification</h2>
-  
+
   <% if (error) { %>
-    <div class="alert alert-error">
-      Failed to send notification. Please check all fields and try again.
-    </div>
+  <div class="alert alert-error">
+    Failed to send notification. Please check all fields and try again.
+  </div>
   <% } %>
 
   <div class="form-container">
     <form method="POST" action="/send">
       <div class="form-group">
         <label for="recipient">Recipient *</label>
-        <input 
-          type="text" 
-          id="recipient" 
-          name="recipient" 
+        <input
+          type="text"
+          id="recipient"
+          name="recipient"
           placeholder="Email address or phone number"
           required
-        >
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="template">Use Template (Optional)</label>
+        <select id="template" name="template">
+          <option value="">-- No template --</option>
+          <% if (typeof templates !== 'undefined') { %> 
+            <% templates.forEach(template => { %>
+              <option
+                value="<%= template.id %>"
+                data-channel="<%= template.channel %>"
+                data-subject="<%= template.subject %>"
+                data-content="<%= template.content %>"
+              >
+                <%= template.name %>
+              </option>
+            <% }) %> 
+          <% } %>
+        </select>
       </div>
 
       <div class="form-group">
@@ -35,20 +54,20 @@
 
       <div class="form-group">
         <label for="subject">Subject</label>
-        <input 
-          type="text" 
-          id="subject" 
-          name="subject" 
+        <input
+          type="text"
+          id="subject"
+          name="subject"
           placeholder="Notification subject (optional)"
-        >
+        />
       </div>
 
       <div class="form-group">
         <label for="content">Message *</label>
-        <textarea 
-          id="content" 
-          name="content" 
-          rows="6" 
+        <textarea
+          id="content"
+          name="content"
+          rows="6"
           placeholder="Enter your notification message here..."
           required
         ></textarea>
@@ -62,4 +81,5 @@
   </div>
 </div>
 
+<script src="/js/send.js"></script>
 <%- include('../includes/end.ejs') %>

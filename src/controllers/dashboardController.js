@@ -1,5 +1,6 @@
 const notificationRepository = require("../database/repositories/notificationRepository");
-const queueManager = require('../core/queue/queueManager');
+const templateRepository = require("../database/repositories/templateRepository");
+const queueManager = require("../core/queue/queueManager");
 
 // GET / - Dashboard home
 exports.getDashboard = async (req, res, next) => {
@@ -27,11 +28,14 @@ exports.getDashboard = async (req, res, next) => {
 };
 
 // GET /send - Show send notification form
-exports.getSendForm = (req, res, next) => {
+exports.getSendForm = async (req, res, next) => {
   try {
+    const templates = await templateRepository.findAll();
+
     res.render("pages/send", {
       pageTitle: "Send Notification",
       path: "/send",
+      templates,
       error: req.query.error || false,
     });
   } catch (error) {
@@ -61,7 +65,7 @@ exports.postSendNotification = async (req, res, next) => {
       subject: subject || "Notification",
       content,
     });
-    
+
     await queueManager.enqueue(notification.id, 1);
 
     res.redirect("/?success=true");

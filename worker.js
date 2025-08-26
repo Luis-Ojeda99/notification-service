@@ -9,24 +9,27 @@ async function startWorker() {
     await db.query('SELECT NOW()');
     logger.info('✅ Worker database connected');
     
-    // Create and start worker
-    const worker = new NotificationWorker();
-    await worker.start();
+    // Create workers
+    const notificationWorker = new NotificationWorker();
+    const retryWorker = new RetryWorker();
+    
+    // Start both workers
+    await Promise.all([
+      notificationWorker.start(),
+      retryWorker.start()
+    ]);
     
     // Handle shutdown
-    process.on('SIGTERM', async () => {
-      logger.info('SIGTERM received, stopping worker...');
-      await worker.stop();
+    const shutdown = async () => {
+      logger.info('Shutting down workers...');
+      await notificationWorker.stop();
+      await retryWorker.stop();
       await db.pool.end();
       process.exit(0);
-    });
+    };
     
-    process.on('SIGINT', async () => {
-      logger.info('SIGINT received, stopping worker...');
-      await worker.stop();
-      await db.pool.end();
-      process.exit(0);
-    });
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
     
   } catch (error) {
     logger.error('Failed to start worker:', error);
