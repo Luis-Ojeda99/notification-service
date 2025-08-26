@@ -1,19 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const notificationController = require('../../../controllers/notificationController');
-const { validateCreateNotification } = require('../middlewares/validateNotification')
-const { notificationCreateLimiter } = require('../../../config/rateLimit');
+const rateLimiters = require('../../../config/rateLimit');
+const { validateCreateNotification } = require('../../../middleware/validation');
 
-// GET /api/v1/notifications - Get all notifications
+/**
+ * @route   GET /api/v1/notifications
+ * @desc    Get paginated list of notifications
+ * @query   limit (default: 20, max: 100), offset (default: 0)
+ * @access  Public
+ */
 router.get('/', notificationController.getAllNotifications);
 
-// GET /api/v1/notifications/:id - Get single notification
+/**
+ * @route   GET /api/v1/notifications/:id
+ * @desc    Get a single notification by ID
+ * @param   {string} id - Notification UUID
+ * @access  Public
+ */
 router.get('/:id', notificationController.getNotificationById);
 
-// POST /api/v1/notifications - Create notification with rate limit
-router.post('/', notificationCreateLimiter, validateCreateNotification, notificationController.createNotification);
+/**
+ * @route   POST /api/v1/notifications
+ * @desc    Create a new notification
+ * @body    { recipient, channel, subject?, content }
+ * @access  Public (rate limited)
+ */
+router.post('/', rateLimiters.notificationCreateLimiter, validateCreateNotification, notificationController.createNotification);
 
-// DELETE /api/v1/notifications/:id - Delete notification
+/**
+ * @route   DELETE /api/v1/notifications/:id
+ * @desc    Delete a notification by ID
+ * @param   {string} id - Notification UUID
+ * @access  Public
+ */
 router.delete('/:id', notificationController.deleteNotification);
 
 module.exports = router;
