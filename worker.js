@@ -1,5 +1,6 @@
 const NotificationWorker = require('./src/workers/notificationWorker');
 const RetryWorker = require('./src/workers/retryWorker');
+const CleanupWorker = require('./src/workers/cleanupWorker');
 const logger = require('./src/utils/logger');
 const db = require('./src/database/connection');
 
@@ -12,11 +13,13 @@ async function startWorker() {
     // Create workers
     const notificationWorker = new NotificationWorker();
     const retryWorker = new RetryWorker();
+    const cleanupWorker = new CleanupWorker();
     
-    // Start both workers
+    // Start all workers
     await Promise.all([
       notificationWorker.start(),
-      retryWorker.start()
+      retryWorker.start(),
+      cleanupWorker.start()
     ]);
     
     // Handle shutdown
@@ -24,6 +27,7 @@ async function startWorker() {
       logger.info('Shutting down workers...');
       await notificationWorker.stop();
       await retryWorker.stop();
+      await cleanupWorker.stop();
       await db.pool.end();
       process.exit(0);
     };

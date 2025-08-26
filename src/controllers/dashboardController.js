@@ -1,19 +1,45 @@
 const notificationRepository = require("../database/repositories/notificationRepository");
 const templateRepository = require("../database/repositories/templateRepository");
 const statsService = require("../services/statsService");
+const db = require('../database/connection');
 const queueManager = require("../core/queue/queueManager");
 
-// GET / - Dashboard home
 exports.getDashboard = async (req, res, next) => {
   try {
+    const { search, status, channel } = req.query;
+
+    // Build query
+    let query = "SELECT * FROM notifications WHERE 1=1";
+    const params = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      query += ` AND (recipient ILIKE $${params.length} OR subject ILIKE $${params.length} OR content ILIKE $${params.length})`;
+    }
+
+    if (status) {
+      params.push(status);
+      query += ` AND status = $${params.length}`;
+    }
+
+    if (channel) {
+      params.push(channel);
+      query += ` AND channel = $${params.length}`;
+    }
+
+    query += " ORDER BY created_at DESC LIMIT 10";
+
     const stats = await notificationRepository.getStats();
-    const notifications = await notificationRepository.getRecent(10);
+    const notifications = await db.query(query, params);
 
     res.render("pages/dashboard", {
       pageTitle: "Dashboard",
       path: "/",
       stats,
-      notifications,
+      notifications: notifications.rows,
+      search: search || "",
+      filterStatus: status || "",
+      filterChannel: channel || "",
       success: req.query.success || false,
     });
   } catch (error) {

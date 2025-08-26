@@ -21,6 +21,49 @@
   </div>
 </div>
 
+<div class="filter-bar">
+  <form method="GET" action="/" class="filter-form">
+    <div class="filter-field flex-grow">
+      <label for="search">Search</label>
+      <input 
+        type="text" 
+        id="search" 
+        name="search" 
+        value="<%= search %>"
+        placeholder="Search by recipient, subject, or content..."
+      >
+    </div>
+    
+    <div class="filter-field">
+      <label for="status">Status</label>
+      <select name="status" id="status">
+        <option value="">All</option>
+        <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+        <option value="delivered" <%= filterStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+        <option value="failed" <%= filterStatus === 'failed' ? 'selected' : '' %>>Failed</option>
+      </select>
+    </div>
+    
+    <div class="filter-field">
+      <label for="channel">Channel</label>
+      <select name="channel" id="channel">
+        <option value="">All</option>
+        <option value="email" <%= filterChannel === 'email' ? 'selected' : '' %>>Email</option>
+        <option value="sms" <%= filterChannel === 'sms' ? 'selected' : '' %>>SMS</option>
+        <option value="webhook" <%= filterChannel === 'webhook' ? 'selected' : '' %>>Webhook</option>
+        <option value="push" <%= filterChannel === 'push' ? 'selected' : '' %>>Push</option>
+      </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="/" class="btn btn-secondary">Clear</a>
+  </form>
+</div>
+
+<div class="action-bar">
+  <a href="/export?format=csv" class="btn-export">📥 Export CSV</a>
+</div>
+
 <h3>Recent Notifications</h3>
 <table>
   <thead>
