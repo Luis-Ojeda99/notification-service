@@ -2,10 +2,10 @@ const db = require("../connection");
 
 class NotificationRepository {
   // Get all notifications
-  async findAll(limit = 50) {
+  async findAll(limit = 50, offset = 0) {
     const result = await db.query(
-      "SELECT * FROM notifications ORDER BY created_at DESC LIMIT $1",
-      [limit]
+      "SELECT * FROM notifications ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      [limit, offset]
     );
     return result.rows;
   }
