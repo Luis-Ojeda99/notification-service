@@ -3,15 +3,27 @@ const notificationRepository = require("../database/repositories/notificationRep
 // GET /api/v1/notifications
 exports.getAllNotifications = async (req, res, next) => {
   try {
-    const notifications = await notificationRepository.findAll();
-
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const offset = parseInt(req.query.offset) || 0;
+    
+    const notifications = await notificationRepository.findAll(limit, offset);
+    const totalResult = await db.query('SELECT COUNT(*) FROM notifications');
+    const total = parseInt(totalResult.rows[0].count);
+    
     res.json({
       success: true,
-      count: notifications.length,
-      notifications,
+      data: {
+        notifications,
+        pagination: {
+          limit,
+          offset,
+          total,
+          hasMore: offset + limit < total
+        }
+      }
     });
   } catch (error) {
-    console.error("Error fetching notifications:", error);
+    logger.error('Error fetching notifications:', error);
     next(error);
   }
 };

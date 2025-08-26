@@ -11,7 +11,7 @@ router.get('/', notificationController.getAllNotifications);
 router.get('/:id', notificationController.getNotificationById);
 
 // POST /api/v1/notifications - Create notification with rate limit
-router.post('/', notificationCreateLimiter, notificationController.createNotification);
+router.post('/', notificationCreateLimiter, validateCreateNotification, notificationController.createNotification);
 
 // DELETE /api/v1/notifications/:id - Delete notification
 router.delete('/:id', notificationController.deleteNotification);
