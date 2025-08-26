@@ -6,12 +6,15 @@ const templateController = require("../../controllers/templateController");
 const bulkNotificationController = require("../../controllers/bulkNotificationController");
 const notificationExportController = require("../../controllers/notificationExportController");
 
+const { notificationCreateLimiter, bulkOperationLimiter } = require('../../config/rateLimit');
+
+
 // Dashboard routes
 router.get("/", dashboardController.getDashboard);
 
 router.get("/send", dashboardController.getSendForm);
 
-router.post("/send", dashboardController.postSendNotification);
+router.post("/send", notificationCreateLimiter, dashboardController.postSendNotification);
 
 router.get("/notification/:id", dashboardController.getNotificationDetails);
 
@@ -27,7 +30,7 @@ router.post("/templates/create", templateController.postCreateTemplate);
 // Bulk send routes
 router.get("/bulk", bulkNotificationController.getBulkSendForm);
 
-router.post("/bulk", bulkNotificationController.postBulkSend);
+router.post("/bulk", bulkOperationLimiter, bulkNotificationController.postBulkSend);
 
 // Export route
 router.get("/export", notificationExportController.exportNotifications);

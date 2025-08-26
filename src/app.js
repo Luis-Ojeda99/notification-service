@@ -7,6 +7,9 @@ const path = require("path");
 const config = require("./config");
 const logger = require("./utils/logger");
 
+// Rate limiting
+const { globalLimiter, apiLimiter } = require("./config/rateLimit");
+
 // Route imports
 const dashboardRoutes = require("./web/routes/dashboard");
 const notificationRoutes = require("./api/v1/routes/notifications");
@@ -19,6 +22,9 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors());
+
+// Apply global rate limiter to all routes
+app.use(globalLimiter);
 
 // Body parsing middleware
 app.use(express.json());
@@ -34,7 +40,7 @@ app.set("view engine", "ejs");
 // Static files (for CSS, JS, images)
 app.use(express.static(path.join(__dirname, "../public")));
 
-// Health check endpoint
+// Health check endpoint (no extra rate limiting for health checks)
 app.get("/health", async (req, res, next) => {
   try {
     const health = await healthService.getSystemHealth();
@@ -57,11 +63,11 @@ app.get("/health", async (req, res, next) => {
 // Web routes (Dashboard)
 app.use("/", dashboardRoutes);
 
-// API routes
-app.use("/api/v1/notifications", notificationRoutes);
+// API routes 
+app.use("/api/v1/notifications", apiLimiter, notificationRoutes);
 
-//Root API endpoint
-app.get("/api/v1", (req, res, next) => {
+// Root API endpoint with API rate limiting
+app.get("/api/v1", apiLimiter, (req, res, next) => {
   try {
     res.json({
       message: "Notification Service API v1",
