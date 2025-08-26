@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const notificationController = require('../../../controllers/notificationController');
+const { validateCreateNotification } = require('../middlewares/validateNotification')
 const { notificationCreateLimiter } = require('../../../config/rateLimit');
 
 // GET /api/v1/notifications - Get all notifications
