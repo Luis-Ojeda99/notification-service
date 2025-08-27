@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=notification_service
+      - DB_USER=postgres
+      - DB_PASSWORD=KHMP7a7%f$$MfBzsk
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
