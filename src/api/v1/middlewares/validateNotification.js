@@ -1,22 +1,25 @@
-exports.validateCreateNotification = (req, res, next) => {
-  const { recipient, channel, content } = req.body;
-  const errors = [];
+const { body, validationResult } = require("express-validator");
 
-  if (!recipient) errors.push("recipient is required");
-  if (!channel) errors.push("channel is required");
-  if (!content) errors.push("content is required");
+exports.validateCreateNotification = [
+  body("recipient").trim().notEmpty().withMessage("Recipient is required"),
+  body("channel")
+    .isIn(["email", "sms", "push", "webhook"])
+    .withMessage("Invalid channel"),
+  body("content")
+    .trim()
+    .notEmpty()
+    .isLength({ max: 1000 })
+    .withMessage("Content is required (max 1000 chars)"),
+  body("subject").optional().trim().isLength({ max: 200 }),
 
-  const validChannels = ["email", "sms", "webhook", "push"];
-  if (channel && !validChannels.includes(channel)) {
-    errors.push(`channel must be one of: ${validChannels.join(", ")}`);
-  }
-
-  if (errors.length > 0) {
-    return res.status(422).json({
-      error: "Validation failed",
-      details: errors,
-    });
-  }
-
-  next();
-};
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        error: "Validation failed",
+        details: errors.array().map((e) => e.msg),
+      });
+    }
+    next();
+  },
+];

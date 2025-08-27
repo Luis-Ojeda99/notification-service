@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const notificationController = require('../../../controllers/notificationController');
 const rateLimiters = require('../../../config/rateLimit');
-const { validateCreateNotification } = require('../../../middleware/validation');
+const { validateCreateNotification } = require('../middlewares/validateNotification');
 
 /**
  * @route   GET /api/v1/notifications
