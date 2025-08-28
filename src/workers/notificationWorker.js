@@ -1,9 +1,9 @@
 const queueManager = require("../core/queue/queueManager");
 const notificationRepository = require("../database/repositories/notificationRepository");
 const emailChannel = require("../core/channels/emailChannel");
-const smsChannel = require('../core/channels/smsChannel');
-const webhookChannel = require('../core/channels/webhookChannel');
-const pushChannel = require('../core/channels/pushChannel');
+const smsChannel = require("../core/channels/smsChannel");
+const webhookChannel = require("../core/channels/webhookChannel");
+const pushChannel = require("../core/channels/pushChannel");
 
 class NotificationWorker {
   constructor() {
@@ -12,23 +12,25 @@ class NotificationWorker {
       email: emailChannel,
       sms: smsChannel,
       webhook: webhookChannel,
-      push: pushChannel
+      push: pushChannel,
     };
   }
 
   async start() {
     this.isRunning = true;
     console.log("🚀 Notification worker started");
+    console.log("Available channels:", Object.keys(this.channels));
 
     while (this.isRunning) {
       try {
-        // Get next job from queue
+        console.log("Checking for jobs...");
         const job = await queueManager.dequeue();
 
         if (job) {
+          console.log("Found job:", job);
           await this.processNotification(job);
         } else {
-          // No jobs, wait a bit
+          console.log("No jobs found, waiting...");
           await this.sleep(5000);
         }
       } catch (error) {

@@ -11,6 +11,24 @@ services:
       - DB_NAME=notification_service
       - DB_USER=postgres
       - DB_PASSWORD=KHMP7a7%f$$MfBzsk
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SENDGRID_FROM_EMAIL=${SENDGRID_FROM_EMAIL}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  worker:
+    build: .
+    command: node worker.js
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=notification_service
+      - DB_USER=postgres
+      - DB_PASSWORD=KHMP7a7%f$$MfBzsk
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SENDGRID_FROM_EMAIL=${SENDGRID_FROM_EMAIL}
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"

@@ -11,5 +11,4 @@ coverage
 tests/
 scripts/
 test-db.js
-worker.js
 jest.config.js
